@@ -10,7 +10,7 @@ function globals {
   LOCAL_PATH=$(dirname "$(realpath "$script_path")")
   DOCKER_FILE=${LOCAL_PATH}/assets/Dockerfile
   DOCKER_COMPOSE_FILES="-f ${LOCAL_PATH}/assets/docker-compose.yml"
-  PROJECT_NAME=kong-pongo
+  PROJECT_NAME=${PONGO_PROJECT_NAME:-kong-pongo}
   NETWORK_NAME=pongo-test-network
   SERVICE_NETWORK_NAME=${PROJECT_NAME}
   IMAGE_BASE_NAME=${PROJECT_NAME}-test
