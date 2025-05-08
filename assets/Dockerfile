@@ -66,6 +66,21 @@ RUN cd /kong \
     && luarocks install luacov \
     && luarocks install kong-plugin-dbless-reload 0.1.0
 
+RUN <<-EOL
+  # install zstd. The lua-zstd module requires >= 1.4.9.
+  ZSTD_VERSION="1.4.9"
+  ZSTD_TARBALL="zstd-${ZSTD_VERSION}.tar.gz"
+  ZSTD_SRC_DIR="zstd-${ZSTD_VERSION}"
+  INSTALL_PREFIX="/usr/local"
+
+  curl -L -o ${ZSTD_TARBALL} https://github.com/facebook/zstd/releases/download/v${ZSTD_VERSION}/zstd-${ZSTD_VERSION}.tar.gz
+  tar -xzf ${ZSTD_TARBALL}
+  cd ${ZSTD_SRC_DIR}
+
+  make PREFIX=${INSTALL_PREFIX}
+  make PREFIX=${INSTALL_PREFIX} install
+EOL
+
 # restore the insecure settings from above to secure
 RUN if [ -e ~/.bashrc ]; then rm ~/.bashrc; fi; \
     git config --global http.sslVerify true
