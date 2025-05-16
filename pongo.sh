@@ -786,6 +786,7 @@ function build_image {
     --build-arg PONGO_INSECURE="$PONGO_INSECURE" \
     --build-arg KONG_BASE="$KONG_IMAGE" \
     --build-arg KONG_DEV_FILES="./kong-versions/$VERSION/kong" \
+    --build-arg GITHUB_TOKEN \
     --tag "$KONG_TEST_IMAGE" \
     ${DOCKER_BUILD_EXTRA_ARGS} \
     "$LOCAL_PATH" || err "Error: failed to build test environment"
