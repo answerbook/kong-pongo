@@ -8,6 +8,10 @@ COPY $KONG_DEV_FILES /kong
 ARG PONGO_VERSION
 ENV PONGO_VERSION=$PONGO_VERSION
 
+# Add gh token for use in installing private plugins
+ARG GITHUB_TOKEN
+ENV GITHUB_TOKEN=$GITHUB_TOKEN
+
 # add helper files to workaround some issues
 COPY assets/busted_helper.lua        /pongo/busted_helper.lua
 COPY assets/pongo_entrypoint.sh      /pongo/pongo_entrypoint.sh

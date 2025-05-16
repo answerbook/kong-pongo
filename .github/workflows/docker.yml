@@ -25,10 +25,10 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v3
 
-    - uses: Kong/kong-license@master
-      with:
-        password: ${{ secrets.PULP_PASSWORD }}
-        op-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+    # - uses: Kong/kong-license@master
+    #   with:
+    #     password: ${{ secrets.PULP_PASSWORD }}
+    #     op-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
     - name: Install
       run: |
