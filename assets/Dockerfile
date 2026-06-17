@@ -40,7 +40,6 @@ ENV LUAROCKS_CRYPTO_DIR=$KONG_LIBRARY_PREFIX
 ENV LUAROCKS_OPENSSL_DIR=$KONG_LIBRARY_PREFIX
 
 ENV LUAROCKS_OPTS="CRYPTO_DIR=$LUAROCKS_CRYPTO_DIR OPENSSL_DIR=$LUAROCKS_OPENSSL_DIR"
-ENV LUA_COMPILER_PATH=/usr/local/openresty/luajit/include/luajit-2.1/
 
 ARG http_proxy
 ARG https_proxy
@@ -60,15 +59,6 @@ RUN if [ -n "$PONGO_INSECURE" ] || [ "$PONGO_INSECURE" != "false" ]; then \
         echo '--insecure' >> ~/.curlrc; \
         git config --global http.sslVerify false; \
     fi
-
-# Make sure LuaJIT is in our path
-ENV PATH="/usr/local/openresty/luajit/bin:${PATH}"
-
-# Install LuaRocks
-RUN curl -L -o luarocks-3.12.0.tar.gz https://luarocks.org/releases/luarocks-3.12.0.tar.gz && \
-    tar zxpf luarocks-3.12.0.tar.gz && \
-    cd luarocks-3.12.0 && \
-    ./configure --with-lua-include=${LUA_COMPILER_PATH} && make && make install
 
 RUN /pongo/install-python.sh
 RUN pip3 install httpie || echo -e "\n\n\nFailed installing httpie, continuing without.\n\n\n"
