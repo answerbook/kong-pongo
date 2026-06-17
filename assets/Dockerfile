@@ -11,6 +11,7 @@ ENV PONGO_VERSION=$PONGO_VERSION
 # Add gh token for use in installing private plugins
 ARG GITHUB_TOKEN
 ENV GITHUB_TOKEN=$GITHUB_TOKEN
+ARG PONGO_CUSTOM_CA_CERT
 
 # add helper files to workaround some issues
 COPY assets/busted_helper.lua        /pongo/busted_helper.lua
@@ -25,7 +26,7 @@ COPY assets/parse_git_branch.sh      /pongo/parse_git_branch.sh
 COPY assets/pongo_logo.sh            /pongo/pongo_logo.sh
 COPY assets/workspace_update.lua     /pongo/workspace_update.lua
 COPY assets/pongo_profile.sh         /etc/profile.d/pongo_profile.sh
-COPY assets/install-python.sh        /pongo/install-python.sh
+COPY assets/install-python.sh assets/${PONGO_CUSTOM_CA_CERT}*    /pongo/
 
 USER root
 # httpie and jq are genric utilities usable from the shell action.
@@ -51,7 +52,19 @@ ARG PONGO_INSECURE
 # net-tools: provides `netstat`
 
 RUN apt update \
-    && apt install -y zip make jq m4 curl build-essential wget git libssl-dev zlib1g-dev lsb-release psmisc net-tools
+    && apt install -y zip make jq m4 curl build-essential wget git libssl-dev zlib1g-dev lsb-release psmisc net-tools unzip
+
+RUN if [ -f /pongo/$PONGO_CUSTOM_CA_CERT ] ; then \
+        cp /pongo/$PONGO_CUSTOM_CA_CERT /usr/local/share/ca-certificates/$PONGO_CUSTOM_CA_CERT ; \
+        update-ca-certificates ; \
+        \
+        kong_curl_ca=$(/usr/local/kong-tools/bin/curl-config --ca) ; \
+        if [ -e "$kong_curl_ca" ] ; then \
+            echo -e "\nCustom CA\n=========================\n" >> $kong_curl_ca ; \
+            cat /pongo/$PONGO_CUSTOM_CA_CERT >> $kong_curl_ca ; \
+        fi ; \
+    fi
+ENV PONGO_CUSTOM_CA_CERT="/pongo/${PONGO_CUSTOM_CA_CERT:-NOT_FOUND}"
 
 # insecure connections can be useful if the certs for any intermediate proxy are unavailable
 RUN if [ -n "$PONGO_INSECURE" ] || [ "$PONGO_INSECURE" != "false" ]; then \
@@ -59,6 +72,32 @@ RUN if [ -n "$PONGO_INSECURE" ] || [ "$PONGO_INSECURE" != "false" ]; then \
         echo '--insecure' >> ~/.curlrc; \
         git config --global http.sslVerify false; \
     fi
+
+ARG LUAROCKS_VERSION="3.12.1"
+RUN <<-EOF
+  build_version=$( luarocks --version | sed -nE '1s#/usr/local/bin/luarocks ([[:digit:].]+)$#\1#; s#\.##gp' )
+  luarocks_version=$( echo $LUAROCKS_VERSION | awk 'BEGIN { FS="." }; { printf("%d%d%d\n", $1,$2,$3) }' )
+
+  if [ "$build_version" -ge "$luarocks_version" ]; then
+    # meets the minimum requirement, skip the update
+    luarocks --version
+    exit 0
+  fi
+  echo "Update luarocks to version $LUAROCKS_VERSION"
+
+  build_dir="/luarocks-build"
+  mkdir -p $build_dir && cd $build_dir
+  curl -LO "https://luarocks.org/manifests/hisham/luarocks-${LUAROCKS_VERSION}-1.src.rock"
+  luarocks install "luarocks-${LUAROCKS_VERSION}-1.src.rock"
+  luarocks --version
+
+  mkdir -p /usr/local/kong/temp
+  chown -R kong /usr/local/kong/temp
+  luarocks config home "/usr/local/kong/temp"
+  # luarocks --tree /tmp/test install lua-cjson
+
+  cd / && rm -rf $build_dir
+EOF
 
 RUN /pongo/install-python.sh
 RUN pip3 install httpie || echo -e "\n\n\nFailed installing httpie, continuing without.\n\n\n"
@@ -87,6 +126,7 @@ EOL
 
 # restore the insecure settings from above to secure
 RUN if [ -e ~/.bashrc ]; then rm ~/.bashrc; fi; \
+    if [ -e ~/.curlrc ]; then rm ~/.curlrc; fi; \
     git config --global http.sslVerify true
 
 # make sure resty, LuaJIT, and our custom Busted are in our path

@@ -56,10 +56,10 @@ function versions_to_test {
       if ((segments == 4)); then
         # this is a 4 segment version, which means it is an EE version.
         # For an EE version we need to replace the last 2 digits
-        VERSION="${VERSION:0:${#VERSION}-3}x.x"
+        VERSION="$(echo $VERSION | cut -d. -f1,2).x.x"
       else
         # this should then be an OSS version, replace 1 digit
-        VERSION="${VERSION:0:${#VERSION}-1}x"
+        VERSION="$(echo $VERSION | cut -d. -f1,2).x"
       fi
     fi
 
@@ -128,6 +128,15 @@ function test_single_version {
   else
     tfailure
   fi
+
+  # cleanup the images to free space
+  ttest "pongo clean"
+  KONG_VERSION=$VERSION pongo clean
+  if [ $? -eq 0 ]; then
+    tsuccess
+  else
+    tfailure
+  fi
 }
 
 
@@ -144,6 +153,14 @@ function run_version_test {
     exit 1
   fi
 
+  # lowest major.minor version we still test, per product
+  local MIN_VERSION
+  if [ "$PRODUCT" == "Kong Enterprise" ]; then
+    MIN_VERSION="3.4"
+  else
+    MIN_VERSION="3.9"
+  fi
+
   tinitialize "Pongo test suite" "${BASH_SOURCE[0]}"
 
   local VERSIONS
@@ -154,6 +171,16 @@ function run_version_test {
   pushd kong-plugin || exit 1
 
   for VERSION in $VERSIONS ; do
+    # versions are listed latest-first, so once we drop below MIN_VERSION we can stop
+    if [[ "$VERSION" =~ ^[0-9] ]]; then
+      local MAJOR_MINOR
+      MAJOR_MINOR=$(echo "$VERSION" | cut -d. -f1,2)
+      if [[ "$MAJOR_MINOR" != "$MIN_VERSION" ]] && \
+         [[ "$(printf '%s\n%s\n' "$MAJOR_MINOR" "$MIN_VERSION" | sort -V | head -n1)" == "$MAJOR_MINOR" ]]; then
+        break
+      fi
+    fi
+
     tchapter "$PRODUCT $VERSION"
     test_single_version "$VERSION"
   done
