@@ -22,6 +22,124 @@
 
 ---
 
+## 2.26.0 released 14-Apr-2026
+
+* Feat: Kong Enterprise 3.14.0.1
+
+* Feat: Kong Enterprise 3.14.0.0
+
+* Feat: Kong Enterprise 3.13.0.3
+
+* Feat: Kong Enterprise 3.13.0.2
+
+* Feat: Kong Enterprise 3.12.0.4
+
+* Feat: Kong Enterprise 3.11.0.8
+
+* Feat: Kong Enterprise 3.10.0.10
+
+* Feat: Kong Enterprise 3.10.0.9
+
+* Feat: Kong Enterprise 3.10.0.8
+
+* Feat: Kong Enterprise 3.4.3.25
+
+* Feat: Kong Enterprise 3.4.3.23
+
+## 2.25.0 released 24-Dec-2025
+
+* Feat: Kong Enterprise 3.13.0.0
+
+* Feat: Kong Enterprise 3.12.0.2
+
+* Feat: Kong Enterprise 3.10.0.7
+
+* Chore: remove unnecessary kong-api-tests
+
+## 2.24.0 released 04-Dec-2025
+
+* Chore: disable the test coverage by default.
+  [#713](https://github.com/Kong/kong-pongo/pull/713)
+
+* Feat: Kong Enterprise 3.11.0.1
+
+* Feat: Kong Enterprise 3.11.0.2
+
+* Feat: Kong Enterprise 3.11.0.3
+
+* Feat: Kong Enterprise 3.11.0.4
+
+* Feat: Kong Enterprise 3.11.0.5
+
+* Feat: Kong Enterprise 3.11.0.6
+
+* Feat: Kong Enterprise 3.10.0.4
+
+* Feat: Kong Enterprise 3.10.0.5
+
+* Feat: Kong Enterprise 3.10.0.6
+
+* Feat: Kong Enterprise 3.9.1.2
+
+* Feat: Kong Enterprise 3.8.1.2
+
+* Feat: Kong Enterprise 3.4.3.21
+
+## 2.23.0 released 02-Dec-2025
+
+* Fix: use version v2 of docker-compose for the base image.
+  [#711](https://github.com/Kong/kong-pongo/pull/711)
+
+* Feat: Kong Enterprise 3.12.0.1
+
+## 2.22.0 released 22-Nov-2025
+
+* Feat: Kong Enterprise 3.4.3.22
+* Chore: clean up images after test to free up space.
+  [#709](https://github.com/Kong/kong-pongo/pull/709)
+
+## 2.21.0 released 03-Oct-2025
+
+* Feat: Kong Enterprise 3.12.0.0
+
+## 2.20.0 released 08-Aug-2025
+
+* Feat: make custom CA bundle available during image build
+
+## 2.19.0 released 08-Jul-2025
+
+* Feat: support loading custom CA certificates file in PEM format
+  via the environment variable `PONGO_CUSTOM_CA_CERT` or
+  the `--custom-ca-cert` CLI option.
+
+* Feat: Kong OSS 3.9.1
+
+* Feat: Kong Enterprise 3.4.3.19
+
+* Feat: Kong Enterprise 3.11.0.0
+
+* Feat: Kong Enterprise 3.4.3.20
+
+* Feat: Kong Enterprise 3.10.0.3
+
+## 2.18.0 released 24-Jun-2025
+
+* Fix: Update Luarocks to 3.12.1.
+
+* Feat: Kong Enterprise 2.8.4.13
+
+* Feat: Kong Enterprise 3.8.1.1
+
+* Feat: Kong Enterprise 3.7.1.5
+
+* Feat: Kong Enterprise 2.8.4.14
+
+* Feat: Kong Enterprise 3.10.0.1
+
+* Feat: Kong Enterprise 3.4.3.18
+
+* Feat: Kong Enterprise 3.10.0.2
+
 ## 2.17.0 released 31-Mar-2025
 
 * Feat: Kong Enterprise 3.10.0.0
